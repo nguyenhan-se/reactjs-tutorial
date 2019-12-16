@@ -10,12 +10,14 @@ import About from './AboutComponents.js';
 import { connect } from 'react-redux';
 import {
   postComment,
+  postFeedback,
   fetchDishes,
   fetchComments,
   fetchPromos,
   fetchLeaders
 } from '../redux/action/ActionCreators';
 import { actions } from 'react-redux-form';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 const mapStateToProps = state => {
   return {
@@ -28,6 +30,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   postComment: (dishId, comment) => dispatch(postComment(dishId, comment)),
+  postFeedback: (feedback) => dispatch(postFeedback(feedback)),
   fetchDishes: () => dispatch(fetchDishes()),
   restFeedbackForm: () => dispatch(actions.reset('feedback')),
   fetchComments: () => dispatch(fetchComments()),
@@ -97,24 +100,29 @@ class MainComponent extends Component {
     return (
       <div className='container'>
         <Header />
-        <Switch>
-          <Route exact path='/home' component={HomePage} />
-          <Route
-            exact
-            path='/menu'
-            render={() => <Menu dishes={this.props.dishes} />}
-          />
-          <Route path='/menu/:dishId' component={DishWithId} />
-          <Route
-            exact
-            path='/contactus'
-            component={() => (
-              <Contact restFeedbackForm={this.props.restFeedbackForm} />
-            )}
-          />
-          <Route exact path='/aboutus' component={RenderLeader} />
-          <Redirect to='/home' />
-        </Switch>
+        <TransitionGroup >
+          <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>
+            <Switch location={this.props.location}>
+              <Route exact path='/home' component={HomePage} />
+              <Route
+                exact
+                path='/menu'
+                render={() => <Menu dishes={this.props.dishes} />}
+              />
+              <Route path='/menu/:dishId' component={DishWithId} />
+              <Route
+                exact
+                path='/contactus'
+                component={() => (
+                  <Contact restFeedbackForm={this.props.restFeedbackForm}
+                    postFeedback={this.props.postFeedback} />
+                )}
+              />
+              <Route exact path='/aboutus' component={RenderLeader} />
+              <Redirect to='/home' />
+            </Switch>
+          </CSSTransition>
+        </TransitionGroup>
         <Footer />
       </div>
     );

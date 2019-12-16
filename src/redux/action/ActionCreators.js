@@ -5,6 +5,18 @@ export const fetchDishes = () => dispatch => {
   // run loading dishes
   dispatch(dishesLoading(true));
   return fetch(baseUrl + 'dishes')
+    .then(response => {
+      if (response.ok) {
+        return response;
+      } else {
+        let error = new Error('Error ' + response.status + ': ' + response.statusText);
+        error.response = response
+        throw error;
+      }
+    }, error => {
+      var errmess = new Error('Error connect json-server:' + error.message);
+      throw errmess;
+    })
     .then(response => response.json())
     .then(dishes => dispatch(addDishes(dishes)));
 };
@@ -26,8 +38,21 @@ export const addDishes = dishes => ({
 //fetch comments
 export const fetchComments = () => dispatch => {
   return fetch(baseUrl + 'comments')
+    .then(response => {
+      if (response.ok) {
+        return response;
+      } else {
+        let error = new Error('Error ' + response.status + ': ' + response.statusText);
+        error.response = response
+        throw error;
+      }
+    }, error => {
+      var errmess = new Error('Error connect json-server:' + error.message);
+      throw errmess;
+    })
     .then(response => response.json())
-    .then(comments => dispatch(addComments(comments)));
+    .then(comments => dispatch(addComments(comments)))
+    .catch(error => dispatch(commentsFailed(error.message)));
 };
 
 export const commentsFailed = errmess => ({
@@ -89,9 +114,23 @@ export const addComment = comment => ({
 // fetch promotions
 export const fetchPromos = () => dispatch => {
   dispatch(promosLoading());
+
   return fetch(baseUrl + 'promotions')
+    .then(response => {
+      if (response.ok) {
+        return response;
+      } else {
+        let error = new Error('Error ' + response.status + ': ' + response.statusText);
+        error.response = response
+        throw error;
+      }
+    }, error => {
+      var errmess = new Error('Error connect json-server:' + error.message);
+      throw errmess;
+    })
     .then(response => response.json())
-    .then(promos => dispatch(addPromos(promos)));
+    .then(promos => dispatch(addPromos(promos)))
+    .catch(error => dispatch(promosFailed(error.message)));
 };
 
 export const promosLoading = () => ({
@@ -149,3 +188,56 @@ export const addLeaders = leaders => ({
   type: ActionTypes.ADD_LEADERS,
   payload: leaders
 });
+
+// contact
+export const addFeedback = feedback => ({
+  type: ActionTypes.ADD_FEEDBACK,
+  payload: feedback
+});
+
+export const postFeedback = (contact) => dispatch => {
+  const newFeedback = {
+    firstname: contact.firstname,
+    lastname: contact.lastname,
+    telnum: contact.tel,
+    email: contact.email,
+    agree: contact.agree,
+    contactType: contact.contactType,
+    message: contact.message
+  };
+  return fetch(baseUrl + 'feedback', {
+    method: 'POST',
+    body: JSON.stringify(newFeedback),
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'same-origin'
+  })
+    .then(
+      response => {
+        if (response.ok) {
+          return response;
+        } else {
+          let error = new Error(
+            'Error ' + response.status + ': ' + response.statusText
+          );
+          error.response = response;
+          throw error;
+        }
+      },
+      error => {
+        throw error;
+      }
+    )
+    .then(response => {
+      return response.json();
+    })
+    .then(response => dispatch(addFeedback(response)))
+    .then(response => {
+      alert('Current State is: ' + JSON.stringify(response));
+    })
+    .catch(error => {
+      console.log('post comments', error.message);
+      alert('Your comment could not be posted\nError: ' + error.message);
+    });
+};

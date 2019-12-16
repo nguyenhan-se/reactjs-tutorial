@@ -22,10 +22,11 @@ export default class Contact extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleSubmit(value) {
-    console.log('Current State is: ' + JSON.stringify(value));
-    alert('Current State is: ' + JSON.stringify(value));
-    this.props.restFeedbackForm();
+  handleSubmit(values) {
+    // console.log('Current State is: ' + JSON.stringify(value));
+    // alert('Current State is: ' + JSON.stringify(value));
+    // this.props.restFeedbackForm();
+    this.props.postFeedback(values);
   }
 
   render() {

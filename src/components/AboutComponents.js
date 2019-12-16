@@ -9,27 +9,35 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { baseUrl } from '../shared/baseUrl';
+import { FadeTransform } from 'react-animation-components';
+
 
 function About(props) {
   function RenderLeader({ leader }) {
     return (
-      <Media className='mt-5'>
-        <Media left className='mr-2'>
-          <img
-            width={64}
-            height={64}
-            className='mr-3'
-            src={baseUrl + leader.image}
-            alt={leader.name}
-          />
-        </Media>
+      <FadeTransform in
+        transformProps={{
+          enterTransform: 'translateX(100px)',
+          exitTransform: 'scale(1.5) translateX(-100px)'
+        }}>
+        <Media className='mt-5'>
+          <Media left className='mr-2'>
+            <img
+              width={64}
+              height={64}
+              className='mr-3'
+              src={baseUrl + leader.image}
+              alt={leader.name}
+            />
+          </Media>
 
-        <Media body>
-          <Media heading>{leader.name}</Media>
-          <p>{leader.designation}</p>
-          <p>{leader.description} </p>
+          <Media body>
+            <Media heading>{leader.name}</Media>
+            <p>{leader.designation}</p>
+            <p>{leader.description} </p>
+          </Media>
         </Media>
-      </Media>
+      </FadeTransform>
     );
   }
 
